@@ -1,0 +1,90 @@
+--- satyr-0.3/lib/Makefile.am.orig	2013-03-18 14:41:43.000000000 +0100
++++ satyr-0.3/lib/Makefile.am	2013-04-05 19:01:16.367253347 +0200
+@@ -74,7 +74,7 @@
+ 	unstrip.c \
+ 	utils.c
+ 
+-libsatyr_la_CFLAGS = -Wall -std=gnu99 -D_GNU_SOURCE $(GLIB_CFLAGS)
++libsatyr_la_CFLAGS = -Wall -std=gnu99 -D_GNU_SOURCE $(GLIB_CFLAGS) $(RPM_CFLAGS)
+ libsatyr_la_LDFLAGS = -version-info 1:0:0 $(GLIB_LIBS)
+ 
+ if HAVE_LIBOPCODES
+--- satyr-0.3/configure.ac.orig	2013-04-05 19:30:55.747216259 +0200
++++ satyr-0.3/configure.ac	2013-04-05 19:35:07.100544357 +0200
+@@ -63,6 +63,7 @@
+ AC_CHECK_LIB([unwind-coredump], [main])
+ 
+ # rpm
++PKG_CHECK_MODULES([RPM], [rpm])
+ AC_CHECK_LIB([rpm], [main])
+ 
+ AC_CONFIG_FILES([
+--- satyr-0.3/lib/rpm.c.orig	2013-03-25 15:07:04.000000000 +0100
++++ satyr-0.3/lib/rpm.c	2013-04-06 09:53:22.452804364 +0200
+@@ -24,10 +24,8 @@
+ #include "config.h"
+ #include <errno.h>
+ #ifdef HAVE_LIBRPM
+-#include <rpm/rpmlib.h>
++#include <rpm/rpmtag.h>
+ #include <rpm/rpmdb.h>
+ #include <rpm/rpmts.h>
+-#include <rpm/rpmtd.h>
+-#include <rpm/header.h>
+ #endif
+ #include <fcntl.h>
+@@ -249,18 +248,18 @@
+                   rpmTag tag,
+                   char **result)
+ {
+-    rpmtd tag_data = rpmtdNew();
+-    int success = headerGet(header,
+-                            tag,
+-                            tag_data,
+-                            HEADERGET_DEFAULT);
++    HE_s h;
++    memset(&h, 0, sizeof(h));
++    h.tag = tag;
++    h.ix = -1;
++    int success = headerGet(header, h, 0);
+ 
+     if (success != 1)
+         return false;
+ 
+-    const char *str = rpmtdGetString(tag_data);
++    const char *str = (h.t == RPM_STRING_TYPE) ? h.p.str :
++	    (((h.t == RPM_STRING_ARRAY_TYPE) || (h.t == RPM_I18NSTRING_TYPE)) ? h.p.argv[0] : NULL);
+     *result = (str ? sr_strdup(str) : NULL);
+-    rpmtdFree(tag_data);
+     return str;
+ }
+ 
+@@ -269,20 +268,21 @@
+                   rpmTag tag,
+                   uint32_t *result)
+ {
+-    rpmtd tag_data = rpmtdNew();
+-    int success = headerGet(header,
+-                            tag,
+-                            tag_data,
+-                            HEADERGET_DEFAULT);
++    HE_s h;
++    memset(&h, 0, sizeof(h));
++    h.tag = tag;
++    h.ix = -1;
++    int success = headerGet(header, h, 0);
+ 
+     if (success != 1)
+         return false;
+ 
+-    uint32_t *num = rpmtdGetUint32(tag_data);
++    if (h.t != RPM_UINT32_TYPE)
++        return false;
++    uint32_t *num = h.p.uint_32;
+     if (num)
+         *result = *num;
+ 
+-    rpmtdFree(tag_data);
+     return num;
+ }
+ 
