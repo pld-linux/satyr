@@ -1,11 +1,11 @@
---- satyr-0.3/lib/Makefile.am.orig	2013-03-18 14:41:43.000000000 +0100
-+++ satyr-0.3/lib/Makefile.am	2013-04-05 19:01:16.367253347 +0200
-@@ -74,7 +74,7 @@
+--- satyr-0.5/lib/Makefile.am.orig	2013-07-25 16:01:20.433156909 +0200
++++ satyr-0.5/lib/Makefile.am	2013-07-25 16:22:08.563104528 +0200
+@@ -50,7 +50,7 @@
  	unstrip.c \
  	utils.c
  
--libsatyr_la_CFLAGS = -Wall -std=gnu99 -D_GNU_SOURCE $(GLIB_CFLAGS)
-+libsatyr_la_CFLAGS = -Wall -std=gnu99 -D_GNU_SOURCE $(GLIB_CFLAGS) $(RPM_CFLAGS)
+-libsatyr_la_CFLAGS = -Wall -std=gnu99 -D_GNU_SOURCE -I$(top_srcdir)/include $(GLIB_CFLAGS)
++libsatyr_la_CFLAGS = -Wall -std=gnu99 -D_GNU_SOURCE -I$(top_srcdir)/include $(GLIB_CFLAGS) $(RPM_CFLAGS)
  libsatyr_la_LDFLAGS = -version-info 1:0:0 $(GLIB_LIBS)
  
  if HAVE_LIBOPCODES
