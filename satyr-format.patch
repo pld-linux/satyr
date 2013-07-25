@@ -1,0 +1,11 @@
+--- satyr-0.5/lib/report.c.orig	2013-06-17 11:10:07.000000000 +0200
++++ satyr-0.5/lib/report.c	2013-07-25 16:49:04.553138969 +0200
+@@ -149,7 +149,7 @@
+     {
+         char *stacktrace = sr_java_stacktrace_to_json(report->java_stacktrace);
+         dismantle_object(stacktrace);
+-        sr_strbuf_append_strf(strbuf, stacktrace);
++        sr_strbuf_append_strf(strbuf, "%s", stacktrace);
+         free(stacktrace);
+     }
+ 

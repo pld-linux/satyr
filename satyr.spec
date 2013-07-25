@@ -10,6 +10,7 @@ Source0:	https://fedorahosted.org/released/abrt/%{name}-%{version}.tar.xz
 Patch0:		%{name}-libopcodes.patch
 Patch1:		%{name}-rpm5.patch
 Patch2:		%{name}-rpm45.patch
+Patch3:		%{name}-format.patch
 URL:		http://fedorahosted.org/abrt/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -92,6 +93,7 @@ Wiązania Pythona do biblioteki Satyr.
 %else
 %patch2 -p1
 %endif
+%patch3 -p1
 
 %build
 %{__libtoolize}
@@ -99,7 +101,8 @@ Wiązania Pythona do biblioteki Satyr.
 %{__autoconf}
 %{__autoheader}
 %{__automake}
-%configure
+%configure \
+	--disable-silent-rules
 
 %{__make}
 
