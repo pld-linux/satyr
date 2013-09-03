@@ -1,12 +1,12 @@
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.5
+Version:	0.7
 Release:	1
 License:	GPL v2+
 Group:		Development/Tools
 Source0:	https://fedorahosted.org/released/abrt/%{name}-%{version}.tar.xz
-# Source0-md5:	5d14eecc4b927c56a4368d3f5f6cfff4
+# Source0-md5:	4442705d594b2a8553d93d898d81122e
 Patch0:		%{name}-libopcodes.patch
 Patch1:		%{name}-rpm5.patch
 Patch2:		%{name}-rpm45.patch
