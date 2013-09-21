@@ -1,16 +1,15 @@
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.7
+Version:	0.9
 Release:	1
 License:	GPL v2+
 Group:		Development/Tools
 Source0:	https://fedorahosted.org/released/abrt/%{name}-%{version}.tar.xz
-# Source0-md5:	4442705d594b2a8553d93d898d81122e
+# Source0-md5:	d1d58dfc3896f35dd7be00f1ab4a6b7c
 Patch0:		%{name}-libopcodes.patch
 Patch1:		%{name}-rpm5.patch
 Patch2:		%{name}-rpm45.patch
-Patch3:		%{name}-format.patch
 URL:		http://fedorahosted.org/abrt/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -93,7 +92,6 @@ Wiązania Pythona do biblioteki Satyr.
 %else
 %patch2 -p1
 %endif
-%patch3 -p1
 
 %build
 %{__libtoolize}
@@ -131,7 +129,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libsatyr.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libsatyr.so.1
+%attr(755,root,root) %ghost %{_libdir}/libsatyr.so.2
 
 %files devel
 %defattr(644,root,root,755)
@@ -144,3 +142,4 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{py_sitedir}/satyr
 %{py_sitedir}/satyr/__init__.py[co]
 %attr(755,root,root) %{py_sitedir}/satyr/_satyr.so
+%{_mandir}/man3/satyr-python.3*
