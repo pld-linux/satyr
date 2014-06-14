@@ -1,15 +1,16 @@
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.13
+Version:	0.14
 Release:	1
 License:	GPL v2+
 Group:		Development/Tools
 Source0:	https://fedorahosted.org/released/abrt/%{name}-%{version}.tar.xz
-# Source0-md5:	2921d7a6db43df61f0af241187b91cb9
+# Source0-md5:	8f87674f1cee840d35063887b1898dbe
 Patch0:		%{name}-libopcodes.patch
 Patch1:		%{name}-rpm5.patch
 Patch2:		%{name}-rpm45.patch
+Patch3:		%{name}-format.patch
 URL:		http://fedorahosted.org/abrt/
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -93,6 +94,7 @@ Wiązania Pythona do biblioteki Satyr.
 %else
 %patch2 -p1
 %endif
+%patch3 -p1
 
 %build
 %{__libtoolize}
