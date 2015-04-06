@@ -1,12 +1,16 @@
+#
+# Conditional build:
+%bcond_without	python3	# CPython 3.x binding
+#
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.16
-Release:	2
+Version:	0.17
+Release:	1
 License:	GPL v2+
 Group:		Development/Tools
 Source0:	https://fedorahosted.org/released/abrt/%{name}-%{version}.tar.xz
-# Source0-md5:	cf8783759f9e209835afca9085e2bd1b
+# Source0-md5:	7a3fcff30ea9a0dd364af5f90003bde4
 Patch0:		%{name}-libopcodes.patch
 Patch1:		%{name}-rpm5.patch
 Patch2:		%{name}-rpm45.patch
@@ -20,6 +24,7 @@ BuildRequires:	libstdc++-devel
 BuildRequires:	pkgconfig
 BuildRequires:	rpm-devel >= 4.5
 BuildRequires:	python-devel >= 1:2.6
+%{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	sphinx-pdg
@@ -27,6 +32,9 @@ BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
 Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+# satyr-python(3) man page exists in both python packages
+%define		_duplicate_files_terminate_build	0
 
 %description
 Satyr is a library that can be used to create and process
@@ -73,17 +81,30 @@ Header files for Satyr library.
 Pliki nagłówkowe biblioteki Satyr.
 
 %package -n python-satyr
-Summary:	Python bindings for Satyr library
-Summary(pl.UTF-8):	Wiązania Pythona do biblioteki Satyr
+Summary:	Python 2 bindings for Satyr library
+Summary(pl.UTF-8):	Wiązania Pythona 2 do biblioteki Satyr
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	python-modules
 
 %description -n python-satyr
-Python bindings for Satyr library.
+Python 2 bindings for Satyr library.
 
 %description -n python-satyr -l pl.UTF-8
-Wiązania Pythona do biblioteki Satyr.
+Wiązania Pythona 2 do biblioteki Satyr.
+
+%package -n python3-satyr
+Summary:	Python 3 bindings for Satyr library
+Summary(pl.UTF-8):	Wiązania Pythona 3 do biblioteki Satyr
+Group:		Libraries/Python
+Requires:	%{name}-libs = %{version}-%{release}
+Requires:	python3-modules
+
+%description -n python3-satyr
+Python 3 bindings for Satyr library.
+
+%description -n python3-satyr -l pl.UTF-8
+Wiązania Pythona 3 do biblioteki Satyr.
 
 %prep
 %setup -q
@@ -103,7 +124,8 @@ printf '%s' '%{version}' > satyr-version
 %{__autoheader}
 %{__automake}
 %configure \
-	--disable-silent-rules
+	--disable-silent-rules \
+	%{!?with_python3:--without-python3}
 
 %{__make}
 
@@ -113,9 +135,17 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/*.la $RPM_BUILD_ROOT%{py_sitedir}/satyr/*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/*.la \
+	$RPM_BUILD_ROOT%{py_sitedir}/satyr/*.la
+
 
 %py_postclean
+
+%if %{with python3}
+%py3_comp $RPM_BUILD_ROOT%{py3_sitedir}
+%py3_ocomp $RPM_BUILD_ROOT%{py3_sitedir}
+%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/satyr/*.la
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -146,3 +176,13 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitedir}/satyr/__init__.py[co]
 %attr(755,root,root) %{py_sitedir}/satyr/_satyr.so
 %{_mandir}/man3/satyr-python.3*
+
+%if %{with python3}
+%files -n python3-satyr
+%defattr(644,root,root,755)
+%dir %{py3_sitedir}/satyr
+%{py3_sitedir}/satyr/__init__.py
+%attr(755,root,root) %{py3_sitedir}/satyr/_satyr3.so
+%{py3_sitedir}/satyr/__pycache__
+%{_mandir}/man3/satyr-python.3*
+%endif
