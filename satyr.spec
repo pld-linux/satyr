@@ -13,16 +13,16 @@ Source0:	https://fedorahosted.org/released/abrt/%{name}-%{version}.tar.xz
 # Source0-md5:	ebb66f06caa001f7acfa366affca5c52
 Patch0:		%{name}-rpm5.patch
 Patch1:		%{name}-rpm45.patch
-URL:		http://fedorahosted.org/abrt/
+URL:		https://github.com/abrt/satyr
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	elfutils-devel
-BuildRequires:	libtool
 BuildRequires:	libstdc++-devel
+BuildRequires:	libtool
 BuildRequires:	pkgconfig
-BuildRequires:	rpm-devel >= 4.5
 BuildRequires:	python-devel >= 1:2.6
 %{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
+BuildRequires:	rpm-devel >= 4.5
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.219
 BuildRequires:	sphinx-pdg
