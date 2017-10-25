@@ -6,7 +6,7 @@ Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
 Version:	0.23
-Release:	2
+Release:	3
 License:	GPL v2+
 Group:		Development/Tools
 Source0:	https://github.com/abrt/satyr/archive/%{version}/%{name}-%{version}.tar.gz
@@ -30,6 +30,7 @@ BuildRequires:	sphinx-pdg
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
 Requires:	%{name}-libs = %{version}-%{release}
+Obsoletes:	btparser
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # satyr-python(3) man page exists in both python packages
@@ -59,6 +60,7 @@ wykonywać na nich podstawowe operacje.
 Summary:	Satyr library - automatic problem management with anonymous reports
 Summary(pl.UTF-8):	Biblioteka Satyr do automatycznego zarządzania problemami z anonimowymi zgłoszeniami
 Group:		Libraries
+Obsoletes:	btparser-libs
 
 %description libs
 Satyr library - automatic problem management with anonymous reports.
@@ -72,6 +74,7 @@ Summary:	Header files for Satyr library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki Satyr
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Obsoletes:	btparser-devel
 
 %description devel
 Header files for Satyr library.
@@ -85,6 +88,7 @@ Summary(pl.UTF-8):	Wiązania Pythona 2 do biblioteki Satyr
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	python-modules
+Obsoletes:	python-btparser
 
 %description -n python-satyr
 Python 2 bindings for Satyr library.
