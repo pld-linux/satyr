@@ -1,22 +1,25 @@
 #
 # Conditional build:
+%bcond_without	apidocs	# Doxygen API documentation
 %bcond_without	python3	# CPython 3.x binding
 #
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.23
-Release:	3
+Version:	0.24
+Release:	1
 License:	GPL v2+
 Group:		Development/Tools
+#Source0Download: https://github.com/abrt/satyr/releases
 Source0:	https://github.com/abrt/satyr/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	23607da2080c798307eb8ce6f69f337f
+# Source0-md5:	a93ce43a212713bd6a9e0872779acf5d
 Patch0:		%{name}-rpm5.patch
 Patch1:		%{name}-rpm45.patch
 URL:		https://github.com/abrt/satyr
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	binutils-devel
+%{?with_apidocs:BuildRequires:	doxygen}
 BuildRequires:	elfutils-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
@@ -82,6 +85,17 @@ Header files for Satyr library.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki Satyr.
 
+%package apidocs
+Summary:	API documentation for Satyr library
+Summary(pl.UTF-8):	Dokumentacja API biblioteki Satyr
+Group:		Documentation
+
+%description apidocs
+API documentation for Satyr library.
+
+%description apidocs -l pl.UTF-8
+Dokumentacja API biblioteki Satyr.
+
 %package -n python-satyr
 Summary:	Python 2 bindings for Satyr library
 Summary(pl.UTF-8):	Wiązania Pythona 2 do biblioteki Satyr
@@ -126,6 +140,7 @@ printf '%s' '%{version}' > satyr-version
 %{__autoheader}
 %{__automake}
 %configure \
+	%{?with_apidocs:--enable-doxygen-docs} \
 	--disable-silent-rules \
 	%{!?with_python3:--without-python3}
 
@@ -171,6 +186,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libsatyr.so
 %{_includedir}/satyr
 %{_pkgconfigdir}/satyr.pc
+
+%if %{with apidocs}
+%files apidocs
+%defattr(644,root,root,755)
+%doc apidoc/html/{search,*.css,*.html,*.js,*.png}
+%endif
 
 %files -n python-satyr
 %defattr(644,root,root,755)
