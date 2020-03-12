@@ -1,18 +1,17 @@
 #
 # Conditional build:
 %bcond_without	apidocs	# Doxygen API documentation
-%bcond_without	python3	# CPython 3.x binding
 #
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.27
+Version:	0.30
 Release:	1
 License:	GPL v2+
 Group:		Development/Tools
 #Source0Download: https://github.com/abrt/satyr/releases
 Source0:	https://github.com/abrt/satyr/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	8c3b82597b69831634ab69f105c168c0
+# Source0-md5:	38c75534d7d071348c979f82962070f8
 Patch0:		%{name}-rpm5.patch
 Patch1:		%{name}-rpm45.patch
 URL:		https://github.com/abrt/satyr
@@ -21,12 +20,13 @@ BuildRequires:	automake
 BuildRequires:	binutils-devel
 %{?with_apidocs:BuildRequires:	doxygen}
 BuildRequires:	elfutils-devel
+BuildRequires:	json-c-devel
 BuildRequires:	libgomp-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
+BuildRequires:	nettle-devel
 BuildRequires:	pkgconfig
-BuildRequires:	python-devel >= 1:2.6
-%{?with_python3:BuildRequires:	python3-devel >= 1:3.2}
+BuildRequires:	python3-devel >= 1:3.6
 BuildRequires:	rpm-devel >= 4.5
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.219
@@ -36,9 +36,6 @@ BuildRequires:	xz
 Requires:	%{name}-libs = %{version}-%{release}
 Obsoletes:	btparser
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-# satyr-python(3) man page exists in both python packages
-%define		_duplicate_files_terminate_build	0
 
 %description
 Satyr is a library that can be used to create and process
@@ -64,6 +61,7 @@ wykonywać na nich podstawowe operacje.
 Summary:	Satyr library - automatic problem management with anonymous reports
 Summary(pl.UTF-8):	Biblioteka Satyr do automatycznego zarządzania problemami z anonimowymi zgłoszeniami
 Group:		Libraries
+Requires:	json-c-devel
 Obsoletes:	btparser-libs
 
 %description libs
@@ -97,26 +95,14 @@ API documentation for Satyr library.
 %description apidocs -l pl.UTF-8
 Dokumentacja API biblioteki Satyr.
 
-%package -n python-satyr
-Summary:	Python 2 bindings for Satyr library
-Summary(pl.UTF-8):	Wiązania Pythona 2 do biblioteki Satyr
-Group:		Libraries/Python
-Requires:	%{name}-libs = %{version}-%{release}
-Requires:	python-modules
-Obsoletes:	python-btparser
-
-%description -n python-satyr
-Python 2 bindings for Satyr library.
-
-%description -n python-satyr -l pl.UTF-8
-Wiązania Pythona 2 do biblioteki Satyr.
-
 %package -n python3-satyr
 Summary:	Python 3 bindings for Satyr library
 Summary(pl.UTF-8):	Wiązania Pythona 3 do biblioteki Satyr
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	python3-modules
+Requires:	python3-modules >= 1:3.6
+Obsoletes:	python-btparser
+Obsoletes:	python-satyr
 
 %description -n python3-satyr
 Python 3 bindings for Satyr library.
@@ -129,7 +115,9 @@ Wiązania Pythona 3 do biblioteki Satyr.
 %if "%{_rpmversion}" >= "5.0"
 %patch0 -p1
 %else
+%if "%{_rpmversion}" >= "4.5" && "%{_rpmversion}" < "4.6"
 %patch1 -p1
+%endif
 %endif
 
 printf '%s' '%{version}' > satyr-version
@@ -142,8 +130,7 @@ printf '%s' '%{version}' > satyr-version
 %{__automake}
 %configure \
 	%{?with_apidocs:--enable-doxygen-docs} \
-	--disable-silent-rules \
-	%{!?with_python3:--without-python3}
+	--disable-silent-rules
 
 %{__make}
 
@@ -154,16 +141,10 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/*.la \
-	$RPM_BUILD_ROOT%{py_sitedir}/satyr/*.la
+	$RPM_BUILD_ROOT%{py3_sitedir}/satyr/*.la
 
-
-%py_postclean
-
-%if %{with python3}
 %py3_comp $RPM_BUILD_ROOT%{py3_sitedir}
 %py3_ocomp $RPM_BUILD_ROOT%{py3_sitedir}
-%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/satyr/*.la
-%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -180,7 +161,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libsatyr.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libsatyr.so.3
+%attr(755,root,root) %ghost %{_libdir}/libsatyr.so.4
 
 %files devel
 %defattr(644,root,root,755)
@@ -194,19 +175,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc apidoc/html/{search,*.css,*.html,*.js,*.png}
 %endif
 
-%files -n python-satyr
-%defattr(644,root,root,755)
-%dir %{py_sitedir}/satyr
-%{py_sitedir}/satyr/__init__.py[co]
-%attr(755,root,root) %{py_sitedir}/satyr/_satyr.so
-%{_mandir}/man3/satyr-python.3*
-
-%if %{with python3}
 %files -n python3-satyr
 %defattr(644,root,root,755)
 %dir %{py3_sitedir}/satyr
 %{py3_sitedir}/satyr/__init__.py
 %attr(755,root,root) %{py3_sitedir}/satyr/_satyr3.so
 %{py3_sitedir}/satyr/__pycache__
-%{_mandir}/man3/satyr-python.3*
-%endif
