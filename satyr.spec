@@ -1,19 +1,19 @@
 #
 # Conditional build:
 %bcond_without	apidocs	# Doxygen API documentation
+%bcond_with	rpm5	# build with rpm5
 #
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
 Version:	0.31
-Release:	2
+Release:	3
 License:	GPL v2+
 Group:		Development/Tools
 #Source0Download: https://github.com/abrt/satyr/releases
 Source0:	https://github.com/abrt/satyr/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	b8d144be731da681b6ff2701422a2f96
 Patch0:		%{name}-rpm5.patch
-Patch1:		%{name}-rpm45.patch
 URL:		https://github.com/abrt/satyr
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
@@ -112,13 +112,7 @@ Wiązania Pythona 3 do biblioteki Satyr.
 
 %prep
 %setup -q
-%if "%{_rpmversion}" >= "5.0"
-%patch0 -p1
-%else
-%if "%{_rpmversion}" >= "4.5" && "%{_rpmversion}" < "4.6"
-%patch1 -p1
-%endif
-%endif
+%{?with_rpm5:%patch0 -p1}
 
 printf '%s' '%{version}' > satyr-version
 
