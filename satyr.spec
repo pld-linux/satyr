@@ -6,13 +6,13 @@
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.31
-Release:	8
+Version:	0.39
+Release:	1
 License:	GPL v2+
 Group:		Development/Tools
 #Source0Download: https://github.com/abrt/satyr/releases
 Source0:	https://github.com/abrt/satyr/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	b8d144be731da681b6ff2701422a2f96
+# Source0-md5:	6acc5098620fba5da8a3f8b13b6331e1
 Patch0:		%{name}-rpm5.patch
 URL:		https://github.com/abrt/satyr
 BuildRequires:	autoconf >= 2.50
@@ -20,6 +20,7 @@ BuildRequires:	automake
 BuildRequires:	binutils-devel
 %{?with_apidocs:BuildRequires:	doxygen}
 BuildRequires:	elfutils-devel
+BuildRequires:	glib2-devel >= 2.0
 BuildRequires:	json-c-devel
 BuildRequires:	libgomp-devel
 BuildRequires:	libstdc++-devel
@@ -29,12 +30,12 @@ BuildRequires:	pkgconfig
 BuildRequires:	python3-devel >= 1:3.6
 BuildRequires:	rpm-devel >= 4.5
 BuildRequires:	rpm-pythonprov
-BuildRequires:	rpmbuild(macros) >= 1.219
+BuildRequires:	rpmbuild(macros) >= 1.507
 BuildRequires:	sphinx-pdg
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
 Requires:	%{name}-libs = %{version}-%{release}
-Obsoletes:	btparser
+Obsoletes:	btparser < 0.27
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -62,7 +63,7 @@ Summary:	Satyr library - automatic problem management with anonymous reports
 Summary(pl.UTF-8):	Biblioteka Satyr do automatycznego zarządzania problemami z anonimowymi zgłoszeniami
 Group:		Libraries
 Requires:	json-c-devel
-Obsoletes:	btparser-libs
+Obsoletes:	btparser-libs < 0.27
 
 %description libs
 Satyr library - automatic problem management with anonymous reports.
@@ -76,7 +77,8 @@ Summary:	Header files for Satyr library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki Satyr
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Obsoletes:	btparser-devel
+Requires:	json-c-devel
+Obsoletes:	btparser-devel < 0.27
 
 %description devel
 Header files for Satyr library.
@@ -101,8 +103,8 @@ Summary(pl.UTF-8):	Wiązania Pythona 3 do biblioteki Satyr
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	python3-modules >= 1:3.6
-Obsoletes:	python-btparser
-Obsoletes:	python-satyr
+Obsoletes:	python-btparser < 0.27
+Obsoletes:	python-satyr < 0.30
 
 %description -n python3-satyr
 Python 3 bindings for Satyr library.
@@ -148,7 +150,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc NEWS README
+%doc NEWS README.md
 %attr(755,root,root) %{_bindir}/satyr
 %{_mandir}/man1/satyr.1*
 
