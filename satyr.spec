@@ -6,13 +6,13 @@
 Summary:	Tools to create anonymous, machine-friendly problem reports
 Summary(pl.UTF-8):	Analizator śladów wywołań tworzonych przez GDB
 Name:		satyr
-Version:	0.39
-Release:	4
+Version:	0.42
+Release:	1
 License:	GPL v2+
 Group:		Development/Tools
 #Source0Download: https://github.com/abrt/satyr/releases
 Source0:	https://github.com/abrt/satyr/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	6acc5098620fba5da8a3f8b13b6331e1
+# Source0-md5:	279394a6c93f3a086e052b6a3355900f
 Patch0:		%{name}-rpm5.patch
 URL:		https://github.com/abrt/satyr
 BuildRequires:	autoconf >= 2.50
